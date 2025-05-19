@@ -53,31 +53,30 @@ def infotodict(seqinfo):
         fmap_rest_rl: []
     }
     for s in seqinfo:
-        if "LOC" in str(s.image_type).upper():
-            print(f"Skipping localizer sequence: {s.protocol_name}")
+        if "LOC" in str(s.protocol_name).upper():
+            print(f"Skipping localizer sequence: {s.protocol_name}, {s.image_type}")
             # skip localizer sequences
             continue
-        elif "NORM" in s.image_type:
-            print(f"Skipping normalized sequence: {s.protocol_name}")
-            # skip normalization sequences
-            continue
-        elif s.dim3 == 256:
-            if "T1" in s.protocol_name or "MPR" in s.protocol_name:
-                print(f"Found T1 sequence: {s.protocol_name}")
-                info[t1w] = [s.series_id]
-            elif "T2" in s.protocol_name:
-                print(f"Found T2 sequence: {s.protocol_name}")
-                info[t2w] = [s.series_id]
-        elif s.dim1 == 64:
-            print(f"Found resting state sequence: {s.protocol_name}")
-            info[rest] = [s.series_id]
-        elif s.dim1 == 74:
+        elif "T1" in s.protocol_name or "MPR" in s.protocol_name:
+            print(f"Found T1 sequence: {s.protocol_name}, {s.image_type}, dim3={s.dim3}")
+            info[t1w] = [s.series_id]
+        elif "T2" in s.protocol_name:
+            print(f"Found T2 sequence: {s.protocol_name}, {s.image_type}, dim3={s.dim3}")
+            info[t2w] = [s.series_id]
+        elif "GRE" in str(s.protocol_name).upper():
             if "LR" in str(s.protocol_name).upper():
-                print(f"Found field map sequence: {s.protocol_name}")
+                print(f"Found field map sequence: {s.protocol_name}, {s.image_type}, dim1={s.dim1}")
                 info[fmap_rest_lr] = [s.series_id]
             elif "RL" in str(s.protocol_name).upper():
-                print(f"Found field map sequence: {s.protocol_name}")
+                print(f"Found field map sequence: {s.protocol_name}, {s.image_type}, dim1={s.dim1}")
                 info[fmap_rest_rl] = [s.series_id]
+        elif s.dim1 == 64:
+            print(f"Found resting state sequence: {s.protocol_name}, {s.image_type}, dim1={s.dim1}")
+            info[rest] = [s.series_id]
         else:
-            print(f"Unknown sequence: {s.protocol_name}, dim1={s.dim1}, dim3={s.dim3}")
+            print(f"Unknown sequence: "
+                  f"protocol_name={s.protocol_name}, "
+                  f"image_type={s.image_type}, "
+                  f"dim1={s.dim1}, "
+                  f"dim3={s.dim3}")
     return info
